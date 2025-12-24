@@ -168,14 +168,13 @@
       <div class="logo">TR</div>
       <div>
         <h1>🌴 TropicRP – Sklep</h1>
-        <div class="sub">Koszyk + dane gracza + Stripe Checkout Sessions (przez Pipedream). Ceny są po stronie Stripe (Price ID), więc nie da się ich podmienić.</div>
+        <div class="sub">Koszyk + dane gracza + Stripe Checkout Sessions (przez Pipedream). Ceny są po stronie Stripe (Price ID).</div>
       </div>
     </div>
     <div class="pill">Stripe • Webhook • FiveM</div>
   </header>
 
   <div class="grid">
-    <!-- LEFT: products -->
     <div class="card shopScroll" id="shopCard">
       <div class="toolbar">
         <div class="search" title="Szukaj po nazwie">
@@ -190,10 +189,9 @@
       <div id="shop"></div>
     </div>
 
-    <!-- RIGHT: cart -->
     <div class="card cartSticky">
       <h2 style="margin:0 0 8px;font-size:18px">🛒 Koszyk</h2>
-      <div class="mini">Wysyłamy do backendu tylko <b>ID produktu</b> i <b>ilość</b>. Stripe liczy kwotę po swoich cenach (Price ID).</div>
+      <div class="mini">Wysyłamy do backendu tylko <b>ID produktu</b> i <b>ilość</b>.</div>
 
       <div id="cart" style="margin-top:12px"></div>
 
@@ -219,7 +217,7 @@
       <div id="msg"></div>
 
       <div class="mini">
-        Jeśli coś nie działa: otwórz <b>F12 → Console</b> i sprawdź logi. Pipedream musi zwrócić JSON z <b>url</b>.
+        Jeśli coś nie działa: otwórz <b>F12 → Console</b>.
       </div>
     </div>
   </div>
@@ -228,10 +226,8 @@
 </div>
 
 <script>
-  // ✅ Twój endpoint Pipedream (Create Checkout)
   const CHECKOUT_URL = "https://eoyfffyqo9gm4i.m.pipedream.net/";
 
-  // Katalog (to tylko UI). ID muszą pasować do PRICE_MAP po stronie Pipedream.
   const CATEGORIES = [
     { key:"premium", title:"🚗 Usługi premium", items:[
       { id:"limitowany_pojazd", name:"Limitowany pojazd", price:120, img:"images/car.png", desc:"Limitowany pojazd premium." },
@@ -368,6 +364,7 @@
     elTotal.textContent = money(totalPreview());
   }
 
+  // ✅ Debug helper: pokaże co dokładnie zwraca Pipedream
   async function pay(){
     try{
       elMsg.innerHTML = "";
@@ -377,11 +374,16 @@
       const nick = document.getElementById("nick").value.trim();
       const identifier = document.getElementById("identifier").value.trim();
       const notes = document.getElementById("notes").value.trim();
-
       if(!nick || !identifier) return setMsg("err", "Uzupełnij Nick/Discord oraz Identifier.");
 
-      // 🔒 Wysyłamy tylko ID i qty (ceny nie idą z przeglądarki)
+      // 🔒 wysyłamy tylko id + qty
       const items = [...cart.values()].map(i => ({ id: i.id, qty: i.qty }));
+
+      // 🔥 żeby nie waliło błędem mapy w Pipedream, testuj tylko limitowany_pojazd dopóki nie dodasz reszty price_...
+      const unknown = items.find(x => x.id !== "limitowany_pojazd");
+      if(unknown){
+        return setMsg("err", "Na test dodaj tylko: Limitowany pojazd.\nMasz w koszyku też: " + unknown.id);
+      }
 
       payBtn.disabled = true;
       payBtn.textContent = "Tworzę płatność...";
@@ -393,17 +395,22 @@
       });
 
       const raw = await r.text();
+      console.log("PIPEDREAM RAW:", raw);
+
       let data = {};
       try{ data = JSON.parse(raw); }catch{}
 
-      console.log("PIPEDREAM RAW:", raw);
       console.log("PIPEDREAM JSON:", data);
 
+      // jeśli Pipedream zwrócił błąd w JSON
       if(!r.ok){
         throw new Error(data?.error || raw || `HTTP ${r.status}`);
       }
+      if(data?.error){
+        throw new Error(data.error);
+      }
       if(!data?.url){
-        throw new Error("Brak URL do Stripe (Pipedream nie zwrócił data.url)");
+        throw new Error("Brak url w odpowiedzi. Pipedream musi zwrócić { url: '...' }");
       }
 
       window.location.href = data.url;
@@ -447,7 +454,6 @@
     setMsg("ok", "Wyczyszczono koszyk.");
   });
 
-  // init
   renderShop();
   renderCart();
 </script>
