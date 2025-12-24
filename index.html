@@ -1,672 +1,216 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TropicRP – Sklep</title>
+<meta charset="UTF-8">
+<title>TropicRP • Sklep</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-  :root{
-    --bg:#061018;
-    --glass: rgba(255,255,255,.08);
-    --glass2: rgba(255,255,255,.05);
-    --line: rgba(255,255,255,.14);
-    --text:#eaffff;
-    --muted: rgba(234,255,255,.72);
+:root{
+  --bg:#071a16;
+  --card:#0f2f28;
+  --accent:#2dd4bf;
+  --accent2:#22c55e;
+  --text:#e6fffa;
+  --muted:#94a3b8;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui,Segoe UI,Arial;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.4),rgba(0,0,0,.9)),
+    url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e");
+  background-size:cover;
+  color:var(--text);
+}
+.wrap{max-width:1200px;margin:auto;padding:24px}
+h1{margin:0 0 10px}
+.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
 
-    --mint:#22e6c3;
-    --violet:#7c5cff;
-    --sun:#ffb020;
-    --coral:#ff5c7a;
+.card{
+  background:rgba(15,47,40,.92);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:16px;
+  padding:16px;
+}
 
-    --r:20px;
-    --shadow: 0 18px 50px rgba(0,0,0,.35);
-  }
+.shopScroll{
+  max-height:calc(100vh - 140px);
+  overflow-y:auto;
+}
+.shopScroll::-webkit-scrollbar{width:8px}
+.shopScroll::-webkit-scrollbar-thumb{
+  background:rgba(45,212,191,.4);
+  border-radius:10px;
+}
 
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family: system-ui, -apple-system, Segoe UI, Inter, Arial;
-    color:var(--text);
-    background:
-      radial-gradient(1200px 600px at 10% -10%, rgba(255,176,32,.22), transparent 60%),
-      radial-gradient(900px 520px at 92% 0%, rgba(34,230,195,.20), transparent 62%),
-      radial-gradient(900px 520px at 70% 22%, rgba(124,92,255,.18), transparent 60%),
-      linear-gradient(180deg, #040b11, var(--bg));
-    min-height:100vh;
-    padding:22px;
-  }
+.item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px;
+  border-radius:12px;
+  margin-bottom:8px;
+  background:rgba(0,0,0,.25)
+}
+.item b{font-size:15px}
+.price{font-weight:900;color:var(--accent)}
 
-  .wrap{max-width:1200px;margin:0 auto}
+button{
+  border:0;
+  border-radius:10px;
+  padding:8px 12px;
+  background:var(--accent);
+  color:#022c22;
+  font-weight:900;
+  cursor:pointer
+}
+button.red{background:#ef4444;color:white}
+button.orange{background:#f59e0b;color:#111}
 
-  /* header */
-  header{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:16px;
-    margin-bottom:14px;
-  }
-  .brand{
-    display:flex;
-    gap:12px;
-    align-items:center;
-  }
-  .logo{
-    width:46px;height:46px;border-radius:16px;
-    background: linear-gradient(135deg, rgba(34,230,195,.95), rgba(255,176,32,.95));
-    display:grid;place-items:center;
-    color:#042016;
-    font-weight:1000;
-    border:1px solid rgba(255,255,255,.18);
-    box-shadow: 0 10px 30px rgba(34,230,195,.18);
-  }
-  h1{margin:0;font-size:26px;letter-spacing:.2px}
-  .sub{
-    margin-top:6px;
-    color:var(--muted);
-    font-size:13px;
-    max-width:760px;
-  }
-  .pill{
-    padding:10px 12px;
-    border-radius:999px;
-    border:1px solid var(--line);
-    background: rgba(255,255,255,.04);
-    color: var(--muted);
-    font-size:12px;
-    white-space:nowrap;
-  }
+.cartItem{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.1)
+}
 
-  /* layout */
-  .grid{
-    display:grid;
-    grid-template-columns: 2fr 1fr;
-    gap:16px;
-  }
-  @media(max-width:1000px){
-    .grid{grid-template-columns:1fr}
-  }
-
-  .card{
-    background: linear-gradient(180deg, var(--glass), var(--glass2));
-    border:1px solid var(--line);
-    border-radius: var(--r);
-    padding:16px;
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(10px);
-    position:relative;
-    overflow:hidden;
-  }
-
-  /* subtle palm overlay */
-  .card::before{
-    content:"";
-    position:absolute;
-    inset:-40px -40px auto auto;
-    width:240px;height:240px;
-    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.10), transparent 60%);
-    transform: rotate(15deg);
-    pointer-events:none;
-  }
-  .palm{
-    position:absolute;
-    right:-20px;
-    top:-10px;
-    opacity:.10;
-    pointer-events:none;
-    filter: blur(.2px);
-  }
-
-  /* scrolling product list */
-  .shopScroll{
-    max-height: calc(100vh - 140px);
-    overflow-y:auto;
-    padding-right:10px;
-  }
-  @media(max-width:1000px){
-    .shopScroll{max-height:none;overflow:visible;padding-right:0}
-  }
-  .shopScroll::-webkit-scrollbar{width:10px}
-  .shopScroll::-webkit-scrollbar-thumb{
-    background: linear-gradient(180deg, rgba(34,230,195,.55), rgba(124,92,255,.45));
-    border-radius:999px;
-    border:2px solid rgba(0,0,0,.35);
-  }
-  .shopScroll::-webkit-scrollbar-track{
-    background: rgba(255,255,255,.05);
-    border-radius:999px;
-  }
-
-  /* sticky cart */
-  @media(min-width:1000px){
-    .cartSticky{position:sticky; top:16px; height:fit-content}
-  }
-
-  /* toolbar */
-  .toolbar{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    align-items:center;
-    margin-bottom:12px;
-  }
-  .search{
-    flex:1;
-    min-width:240px;
-    display:flex;
-    gap:10px;
-    align-items:center;
-    padding:10px 12px;
-    border-radius:14px;
-    border:1px solid rgba(255,255,255,.12);
-    background: rgba(0,0,0,.18);
-  }
-  .search input{
-    border:0; outline:0; background:transparent; color:var(--text);
-    width:100%;
-    font-size:14px;
-  }
-  .chip{
-    cursor:pointer;
-    padding:9px 12px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,.12);
-    background: rgba(255,255,255,.04);
-    color: var(--muted);
-    font-weight:800;
-    font-size:12px;
-    user-select:none;
-  }
-  .chip.active{
-    color:#041a16;
-    border-color: rgba(34,230,195,.55);
-    background: linear-gradient(135deg, rgba(34,230,195,.95), rgba(255,176,32,.95));
-  }
-
-  /* categories */
-  .category{margin:10px 0 18px}
-  .catHead{
-    display:flex; align-items:center; gap:10px;
-    margin:8px 0 10px;
-  }
-  .catTitle{font-size:18px;margin:0}
-  .catBar{
-    height:10px; flex:1; border-radius:999px;
-    background: linear-gradient(90deg, rgba(34,230,195,.25), rgba(255,176,32,.22), rgba(124,92,255,.22));
-    border: 1px solid rgba(255,255,255,.08);
-  }
-
-  .products{
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
-    gap:14px;
-  }
-
-  .product{
-    background: rgba(0,0,0,.18);
-    border:1px solid transparent;
-    border-radius: 18px;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    transition: transform .12s ease, border-color .12s ease, background .12s ease;
-  }
-  .product:hover{
-    transform: translateY(-2px);
-    border-color: rgba(34,230,195,.35);
-    background: rgba(255,255,255,.04);
-  }
-  .product img{
-    width:100%;
-    height:140px;
-    object-fit:cover;
-  }
-  .pbody{
-    padding:12px;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    flex:1;
-  }
-  .pname{margin:0;font-size:15px;font-weight:950}
-  .pdesc{margin:0;font-size:12px;color:var(--muted)}
-  .tags{display:flex;gap:6px;flex-wrap:wrap}
-  .tag{
-    font-size:11px;
-    padding:5px 8px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,.12);
-    background: rgba(255,255,255,.04);
-    color: var(--muted);
-  }
-  .priceRow{
-    display:flex;justify-content:space-between;align-items:center;gap:10px;
-    margin-top:auto;
-  }
-  .price{
-    font-weight:1000;
-    padding:6px 10px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,.12);
-    background: rgba(255,255,255,.04);
-  }
-
-  .btn{
-    cursor:pointer;
-    border:0;
-    border-radius:14px;
-    padding:10px 12px;
-    font-weight:1000;
-    color:#041a16;
-    background: linear-gradient(135deg, rgba(34,230,195,.95), rgba(255,176,32,.95));
-    box-shadow: 0 12px 34px rgba(34,230,195,.10);
-  }
-  .btn:hover{filter: brightness(1.03)}
-  .btn.secondary{
-    color:var(--text);
-    background: transparent;
-    border:1px solid rgba(255,255,255,.14);
-    box-shadow:none;
-  }
-
-  /* cart */
-  .cartEmpty{
-    padding:12px;
-    border-radius:16px;
-    border:1px dashed rgba(255,255,255,.16);
-    background: rgba(0,0,0,.12);
-    color: var(--muted);
-  }
-  .cartItem{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    padding:10px 0;
-    border-bottom:1px solid rgba(255,255,255,.08);
-  }
-  .cartItem:last-child{border-bottom:0}
-  .qty{
-    display:inline-block;
-    margin-top:4px;
-    padding:4px 8px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,.12);
-    background: rgba(255,255,255,.04);
-    color: var(--muted);
-    font-size:11px;
-    font-weight:900;
-  }
-  .cartActions{display:flex;gap:6px;align-items:center}
-  .iconBtn{
-    cursor:pointer;
-    border:0;
-    border-radius:12px;
-    padding:7px 10px;
-    font-weight:1000;
-    color:#041a16;
-  }
-  .iconBtn.minus{background: rgba(255,176,32,.95)}
-  .iconBtn.remove{background: rgba(255,92,122,.95); color:#1a060a}
-  .total{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-top:12px;
-    padding:12px;
-    border-radius:16px;
-    border:1px solid rgba(255,255,255,.10);
-    background: rgba(255,255,255,.04);
-    font-weight:1000;
-  }
-
-  /* form */
-  label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
-  input,textarea{
-    width:100%;
-    padding:10px 12px;
-    border-radius:14px;
-    border:1px solid rgba(255,255,255,.12);
-    background: rgba(0,0,0,.18);
-    color: var(--text);
-    outline:none;
-  }
-  textarea{min-height:92px;resize:vertical}
-
-  .msgOk,.msgErr{
-    margin-top:12px;
-    padding:10px 12px;
-    border-radius:14px;
-    font-size:13px;
-  }
-  .msgOk{border:1px solid rgba(34,230,195,.35); background: rgba(34,230,195,.12); color:#bffcf0}
-  .msgErr{border:1px solid rgba(255,92,122,.35); background: rgba(255,92,122,.12); color:#ffd0d0}
-
-  .mini{
-    margin-top:8px;
-    font-size:11px;
-    color: var(--muted);
-    line-height:1.35;
-  }
-
-  .footer{
-    margin-top:16px;
-    color: rgba(234,255,255,.55);
-    font-size:12px;
-    text-align:center;
-  }
+input,textarea{
+  width:100%;
+  margin-top:8px;
+  padding:10px;
+  border-radius:10px;
+  border:0;
+  background:rgba(0,0,0,.3);
+  color:white
+}
+textarea{resize:vertical}
+.total{font-size:20px;font-weight:900;margin-top:10px}
 </style>
 </head>
 
 <body>
 <div class="wrap">
-  <header>
-    <div class="brand">
-      <div class="logo">TR</div>
+<h1>🌴 TropicRP • Sklep</h1>
+<p class="muted">Usługi premium • Realne płatności Stripe • Automatyczne potwierdzenie</p>
+
+<div class="grid">
+  <!-- SKLEP -->
+  <div class="card shopScroll">
+    <h2>🛒 Usługi</h2>
+
+    <div class="item">
+      <b>Limitowany pojazd</b>
       <div>
-        <h1>🌴 TropicRP – Sklep</h1>
-        <div class="sub">Wybierz usługę, dodaj do koszyka i zapłać przez Stripe. Potwierdzenie realnej wpłaty przychodzi automatycznie na Discord (webhook).</div>
+        <span class="price">120 zł</span>
+        <button onclick="add('car','Limitowany pojazd',120)">+</button>
       </div>
     </div>
-    <div class="pill">Koszyk • Stripe • Webhook</div>
-  </header>
 
-  <div class="grid">
-    <!-- LEFT: products -->
-    <div class="card shopScroll" id="shopCard">
-      <!-- palm svg overlay -->
-      <svg class="palm" width="220" height="220" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 22c2-6 2-10 2-14 0-2 2-4 4-4-2 0-5 1-6 3-1-2-4-3-6-3 2 0 4 2 4 4 0 4 0 8 2 14Z" stroke="white" stroke-width="1.2"/>
-        <path d="M12 10c-2-3-6-4-10-3 4 0 6 2 8 4M12 10c2-3 6-4 10-3-4 0-6 2-8 4" stroke="white" stroke-width="1.2"/>
-      </svg>
-
-      <div class="toolbar">
-        <div class="search" title="Szukaj po nazwie">
-          🔎 <input id="q" placeholder="Szukaj usługi (np. unban, ped, interior)..." />
-        </div>
-        <div class="chip active" data-filter="all">Wszystko</div>
-        <div class="chip" data-filter="premium">Premium</div>
-        <div class="chip" data-filter="biz">Biznes</div>
-        <div class="chip" data-filter="unban">Unbany</div>
+    <div class="item">
+      <b>Anty-lag</b>
+      <div>
+        <span class="price">10 zł</span>
+        <button onclick="add('antilag','Anty-lag',10)">+</button>
       </div>
-
-      <div id="shop"></div>
     </div>
 
-    <!-- RIGHT: cart -->
-    <div class="card cartSticky">
-      <h2 style="margin:0 0 8px;font-size:18px">🛒 Koszyk</h2>
-      <div class="mini">Możesz usuwać pozycje: <b>−</b> odejmuje 1 sztukę, <b>✕</b> usuwa całą pozycję.</div>
-
-      <div id="cart" style="margin-top:12px"></div>
-
-      <div class="total">
-        <div>Suma</div>
-        <div id="total">0 zł</div>
+    <div class="item">
+      <b>Custom Ped</b>
+      <div>
+        <span class="price">50 zł</span>
+        <button onclick="add('ped','Custom Ped',50)">+</button>
       </div>
+    </div>
 
-      <label for="nick">Nick / Discord</label>
-      <input id="nick" placeholder="np. Tropic#0001" />
-
-      <label for="identifier">Identifier (Discord ID / Steam / license)</label>
-      <input id="identifier" placeholder="np. 123456789012345678" />
-
-      <label for="notes">Uwagi</label>
-      <textarea id="notes" placeholder="np. rejestracja: TRP-123, szczegóły unbana, podanie..."></textarea>
-
-      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn" id="payBtn">✅ Zapłać (Stripe)</button>
-        <button class="btn secondary" id="clearBtn">🧹 Wyczyść</button>
-      </div>
-
-      <div id="msg"></div>
-
-      <div class="mini">
-        * Płatność uznajemy dopiero po potwierdzeniu Stripe (webhook).<br>
-        * Jeśli usługa wymaga podania — napisz je w “Uwagi”.
+    <div class="item">
+      <b>Unban permanentny</b>
+      <div>
+        <span class="price">200 zł</span>
+        <button onclick="add('unban','Unban permanentny',200)">+</button>
       </div>
     </div>
   </div>
 
-  <div class="footer">© TropicRP • Sklep FiveM</div>
+  <!-- KOSZYK -->
+  <div class="card">
+    <h2>💳 Koszyk</h2>
+    <div id="cart"></div>
+
+    <div class="total">Suma: <span id="total">0</span> zł</div>
+
+    <input id="nick" placeholder="Nick / Discord">
+    <input id="identifier" placeholder="ID w grze / Discord ID">
+    <textarea id="notes" placeholder="Uwagi (opcjonalnie)"></textarea>
+
+    <button style="width:100%;margin-top:12px" onclick="pay()">Zapłać (Stripe)</button>
+  </div>
+</div>
 </div>
 
 <script>
-  // 🔧 TU WSTAWISZ URL Z PIPEDREAM (Create Checkout)
-  const CHECKOUT_URL = "https://eoyfffyqo9gm4i.m.pipedream.net/";
+const CHECKOUT_URL="https://eoyfffyqo9gm4i.m.pipedream.net/";
+const cart=new Map();
 
-  const CATEGORIES = [
-    {
-      key: "premium",
-      title: "🚗 Usługi premium",
-      items: [
-        { id:"car", name:"Limitowany pojazd", price:120, img:"images/car.png", desc:"Unikalny pojazd premium", tags:["premium"] },
-        { id:"antylag", name:"Anty-lag", price:10, img:"images/antylag.png", desc:"Efekt anty-lag", tags:["premium"] },
-        { id:"sound", name:"Customowy dźwięk silnika", price:20, img:"images/sound.png", desc:"Dźwięk na zamówienie", tags:["premium"] },
-        { id:"plate", name:"Customowa rejestracja", price:10, img:"images/plate.png", desc:"Własna tablica", tags:["premium"] },
-        { id:"char", name:"Druga postać", price:20, img:"images/character.png", desc:"Dodatkowy slot", tags:["premium"] },
-        { id:"ped", name:"Custom Ped", price:50, img:"images/ped.png", desc:"Wymagane podanie", tags:["premium","wymaga_podania"] }
-      ]
-    },
-    {
-      key: "biz",
-      title: "🏢 Nieruchomości & Biznes",
-      items: [
-        { id:"hq", name:"Siedziba organizacji", price:200, img:"images/hq.png", desc:"Cena zależna od interioru", tags:["biz"] },
-        { id:"interior", name:"Własny interior", price:200, img:"images/interior.png", desc:"Interior na zamówienie", tags:["biz"] },
-        { id:"business", name:"Własna firma", price:200, img:"images/business.png", desc:"Lub podanie po akceptacji administracji", tags:["biz"] }
-      ]
-    },
-    {
-      key: "unban",
-      title: "🔓 Unbany",
-      items: [
-        { id:"unban_perm", name:"Unban permanentny", price:200, img:"images/unban.png", desc:"Odblokowanie na stałe", tags:["unban"] },
-        { id:"unban_30", name:"Unban (8–30 dni)", price:50, img:"images/unban.png", desc:"Czasowy unban", tags:["unban"] },
-        { id:"unban_7", name:"Unban (3–7 dni)", price:20, img:"images/unban.png", desc:"Czasowy unban", tags:["unban"] },
-        { id:"unban_2", name:"Unban (1–2 dni)", price:10, img:"images/unban.png", desc:"Czasowy unban", tags:["unban"] }
-      ]
-    }
-  ];
+function add(id,name,price){
+  const it=cart.get(id)||{id,name,price,qty:0};
+  it.qty++;
+  cart.set(id,it);
+  render();
+}
+function removeOne(id){
+  const it=cart.get(id);
+  if(!it)return;
+  it.qty<=1?cart.delete(id):(it.qty--,cart.set(id,it));
+  render();
+}
+function removeAll(id){cart.delete(id);render();}
 
-  const cart = new Map();
-
-  const elShop = document.getElementById("shop");
-  const elCart = document.getElementById("cart");
-  const elTotal = document.getElementById("total");
-  const elMsg = document.getElementById("msg");
-  const elQ = document.getElementById("q");
-  const payBtn = document.getElementById("payBtn");
-  const clearBtn = document.getElementById("clearBtn");
-
-  let activeFilter = "all";
-
-  function money(n){ return `${n} zł`; }
-  function allItems(){ return CATEGORIES.flatMap(c => c.items.map(i => ({...i, catKey:c.key, catTitle:c.title}))); }
-  function total(){ return [...cart.values()].reduce((s,i)=>s + i.price*i.qty, 0); }
-
-  function setMsg(type, text){
-    elMsg.innerHTML = `<div class="${type === "ok" ? "msgOk":"msgErr"}">${text}</div>`;
-  }
-
-  function renderShop(){
-    const q = elQ.value.trim().toLowerCase();
-    const groups = CATEGORIES.map(cat => {
-      const items = cat.items.filter(p => {
-        const matchesFilter = activeFilter === "all" ? true : (cat.key === activeFilter);
-        const matchesQuery = !q ? true : (p.name.toLowerCase().includes(q) || (p.desc||"").toLowerCase().includes(q));
-        return matchesFilter && matchesQuery;
-      });
-      return { ...cat, items };
-    }).filter(g => g.items.length > 0);
-
-    if(groups.length === 0){
-      elShop.innerHTML = `<div class="cartEmpty">Brak wyników. Spróbuj innego wyszukiwania.</div>`;
-      return;
-    }
-
-    elShop.innerHTML = "";
-    groups.forEach(cat => {
-      const section = document.createElement("div");
-      section.className = "category";
-      section.innerHTML = `
-        <div class="catHead">
-          <h2 class="catTitle">${cat.title}</h2>
-          <div class="catBar"></div>
+function render(){
+  const el=document.getElementById("cart");
+  el.innerHTML="";
+  let sum=0;
+  for(const it of cart.values()){
+    sum+=it.price*it.qty;
+    el.innerHTML+=`
+      <div class="cartItem">
+        <div><b>${it.name}</b> x${it.qty}</div>
+        <div>
+          <button class="orange" onclick="removeOne('${it.id}')">−</button>
+          <button class="red" onclick="removeAll('${it.id}')">✕</button>
         </div>
-        <div class="products"></div>
-      `;
-      const grid = section.querySelector(".products");
-
-      cat.items.forEach(p => {
-        const tagsHtml = (p.tags || []).map(t => {
-          const label = t === "wymaga_podania" ? "wymaga podania" : t;
-          return `<span class="tag">${label}</span>`;
-        }).join("");
-
-        const card = document.createElement("div");
-        card.className = "product";
-        card.innerHTML = `
-          <img src="${p.img}" alt="">
-          <div class="pbody">
-            <h3 class="pname">${p.name}</h3>
-            <p class="pdesc">${p.desc || ""}</p>
-            <div class="tags">${tagsHtml}</div>
-            <div class="priceRow">
-              <div class="price">${money(p.price)}</div>
-              <button class="btn" data-add="${p.id}">Dodaj</button>
-            </div>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-
-      elShop.appendChild(section);
-    });
+      </div>`;
   }
+  document.getElementById("total").textContent=sum;
+}
 
-  function add(id){
-    const p = allItems().find(x => x.id === id);
-    const cur = cart.get(id);
-    cart.set(id, { ...p, qty: (cur?.qty || 0) + 1 });
-    renderCart();
-  }
+async function pay(){
+  if(cart.size===0)return alert("Koszyk pusty");
 
-  function removeOne(id){
-    const it = cart.get(id);
-    if(!it) return;
-    if(it.qty <= 1) cart.delete(id);
-    else cart.set(id, { ...it, qty: it.qty - 1 });
-    renderCart();
-  }
+  const payload={
+    customer:{
+      nick:document.getElementById("nick").value.trim(),
+      identifier:document.getElementById("identifier").value.trim()
+    },
+    items:[...cart.values()],
+    notes:document.getElementById("notes").value
+  };
 
-  function removeAll(id){
-    cart.delete(id);
-    renderCart();
-  }
+  if(!payload.customer.nick||!payload.customer.identifier)
+    return alert("Uzupełnij nick i ID");
 
-  function renderCart(){
-    if(cart.size === 0){
-      elCart.innerHTML = `<div class="cartEmpty">Koszyk pusty. Dodaj coś z cennika 🌴</div>`;
-    } else {
-      elCart.innerHTML = "";
-      for(const it of cart.values()){
-        const row = document.createElement("div");
-        row.className = "cartItem";
-        row.innerHTML = `
-          <div>
-            <b>${it.name}</b><br>
-            <span class="qty">x${it.qty}</span>
-          </div>
-          <div class="cartActions">
-            <b>${money(it.price * it.qty)}</b>
-            <button class="iconBtn minus" title="Usuń 1" data-minus="${it.id}">−</button>
-            <button class="iconBtn remove" title="Usuń wszystko" data-remove="${it.id}">✕</button>
-          </div>
-        `;
-        elCart.appendChild(row);
-      }
-    }
-    elTotal.textContent = money(total());
-  }
-
-  async function pay(){
-    elMsg.innerHTML = "";
-    if(cart.size === 0) return setMsg("err", "Koszyk pusty.");
-    if(CHECKOUT_URL.includes("TU_WSTAW")) return setMsg("err", "Stripe niepodłączony (wstaw CHECKOUT_URL z Pipedream).");
-
-    const nick = document.getElementById("nick").value.trim();
-    const identifier = document.getElementById("identifier").value.trim();
-    const notes = document.getElementById("notes").value.trim();
-
-    if(!nick || !identifier) return setMsg("err", "Uzupełnij Nick/Discord oraz Identifier.");
-
-    const items = [...cart.values()].map(i => ({ id:i.id, name:i.name, price:i.price, qty:i.qty }));
-
-    payBtn.disabled = true;
-    payBtn.textContent = "Tworzę płatność...";
-
-    try{
-      const r = await fetch(CHECKOUT_URL, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({
-          items,
-          customer: { nick, identifier },
-          notes
-        })
-      });
-
-      const data = await r.json().catch(()=> ({}));
-      if(!r.ok) throw new Error(data?.error || "Błąd tworzenia płatności");
-      if(!data?.url) throw new Error("Brak URL do Checkout");
-
-      window.location.href = data.url;
-    }catch(e){
-      setMsg("err", e.message);
-      payBtn.disabled = false;
-      payBtn.textContent = "✅ Zapłać (Stripe)";
-    }
-  }
-
-  // UI wiring
-  document.getElementById("shopCard").addEventListener("click", (e) => {
-    const b = e.target.closest("button[data-add]");
-    if(!b) return;
-    add(b.dataset.add);
+  const r=await fetch(CHECKOUT_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(payload)
   });
-
-  elCart.addEventListener("click", (e) => {
-    const bMinus = e.target.closest("button[data-minus]");
-    if(bMinus) return removeOne(bMinus.dataset.minus);
-    const bRemove = e.target.closest("button[data-remove]");
-    if(bRemove) return removeAll(bRemove.dataset.remove);
-  });
-
-  document.querySelectorAll(".chip").forEach(chip => {
-    chip.addEventListener("click", () => {
-      document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-      chip.classList.add("active");
-      activeFilter = chip.dataset.filter;
-      renderShop();
-    });
-  });
-
-  elQ.addEventListener("input", () => renderShop());
-
-  payBtn.addEventListener("click", pay);
-
-  clearBtn.addEventListener("click", () => {
-    cart.clear();
-    renderCart();
-    ["nick","identifier","notes"].forEach(id => document.getElementById(id).value = "");
-    setMsg("ok", "Wyczyszczono koszyk.");
-  });
-
-  // init
-  renderShop();
-  renderCart();
+  const d=await r.json();
+  if(!d.url)return alert("Błąd Stripe");
+  window.location.href=d.url;
+}
 </script>
 </body>
 </html>
