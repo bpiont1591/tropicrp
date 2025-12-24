@@ -10,22 +10,22 @@
   --bg:#071a16;
   --card:#0f2f28;
   --accent:#2dd4bf;
-  --accent2:#22c55e;
+  --danger:#ef4444;
+  --warn:#f59e0b;
   --text:#e6fffa;
-  --muted:#94a3b8;
 }
 *{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Inter,system-ui,Segoe UI,Arial;
+  font-family:system-ui,Segoe UI,Arial;
   background:
-    linear-gradient(180deg,rgba(0,0,0,.4),rgba(0,0,0,.9)),
+    linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.9)),
     url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e");
   background-size:cover;
   color:var(--text);
 }
 .wrap{max-width:1200px;margin:auto;padding:24px}
-h1{margin:0 0 10px}
+h1{margin:0 0 8px}
 .grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px}
 @media(max-width:900px){.grid{grid-template-columns:1fr}}
 
@@ -40,11 +40,6 @@ h1{margin:0 0 10px}
   max-height:calc(100vh - 140px);
   overflow-y:auto;
 }
-.shopScroll::-webkit-scrollbar{width:8px}
-.shopScroll::-webkit-scrollbar-thumb{
-  background:rgba(45,212,191,.4);
-  border-radius:10px;
-}
 
 .item{
   display:flex;
@@ -55,7 +50,6 @@ h1{margin:0 0 10px}
   margin-bottom:8px;
   background:rgba(0,0,0,.25)
 }
-.item b{font-size:15px}
 .price{font-weight:900;color:var(--accent)}
 
 button{
@@ -67,8 +61,8 @@ button{
   font-weight:900;
   cursor:pointer
 }
-button.red{background:#ef4444;color:white}
-button.orange{background:#f59e0b;color:#111}
+button.red{background:var(--danger);color:white}
+button.orange{background:var(--warn);color:#111}
 
 .cartItem{
   display:flex;
@@ -95,7 +89,7 @@ textarea{resize:vertical}
 <body>
 <div class="wrap">
 <h1>🌴 TropicRP • Sklep</h1>
-<p class="muted">Usługi premium • Realne płatności Stripe • Automatyczne potwierdzenie</p>
+<p>Realne płatności Stripe • Automatyczne potwierdzenie</p>
 
 <div class="grid">
   <!-- SKLEP -->
@@ -139,7 +133,6 @@ textarea{resize:vertical}
   <div class="card">
     <h2>💳 Koszyk</h2>
     <div id="cart"></div>
-
     <div class="total">Suma: <span id="total">0</span> zł</div>
 
     <input id="nick" placeholder="Nick / Discord">
@@ -152,23 +145,27 @@ textarea{resize:vertical}
 </div>
 
 <script>
-const CHECKOUT_URL="https://eoyfffyqo9gm4i.m.pipedream.net/";
-const cart=new Map();
+/* ================== CONFIG ================== */
+const CHECKOUT_URL = "https://eoyfffyqo9gm4i.m.pipedream.net/";
+const cart = new Map();
 
+/* ================== KOSZYK ================== */
 function add(id,name,price){
-  const it=cart.get(id)||{id,name,price,qty:0};
+  const it = cart.get(id) || {id,name,price,qty:0};
   it.qty++;
   cart.set(id,it);
   render();
 }
 function removeOne(id){
-  const it=cart.get(id);
-  if(!it)return;
-  it.qty<=1?cart.delete(id):(it.qty--,cart.set(id,it));
+  const it = cart.get(id);
+  if(!it) return;
+  it.qty<=1 ? cart.delete(id) : it.qty--;
   render();
 }
-function removeAll(id){cart.delete(id);render();}
-
+function removeAll(id){
+  cart.delete(id);
+  render();
+}
 function render(){
   const el=document.getElementById("cart");
   el.innerHTML="";
@@ -187,29 +184,54 @@ function render(){
   document.getElementById("total").textContent=sum;
 }
 
+/* ================== STRIPE PAY ================== */
 async function pay(){
-  if(cart.size===0)return alert("Koszyk pusty");
+  try{
+    if(cart.size===0) return alert("Koszyk pusty");
 
-  const payload={
-    customer:{
-      nick:document.getElementById("nick").value.trim(),
-      identifier:document.getElementById("identifier").value.trim()
-    },
-    items:[...cart.values()],
-    notes:document.getElementById("notes").value
-  };
+    const payload={
+      customer:{
+        nick:document.getElementById("nick").value.trim(),
+        identifier:document.getElementById("identifier").value.trim()
+      },
+      items:[...cart.values()],
+      notes:document.getElementById("notes").value
+    };
 
-  if(!payload.customer.nick||!payload.customer.identifier)
-    return alert("Uzupełnij nick i ID");
+    if(!payload.customer.nick || !payload.customer.identifier)
+      return alert("Uzupełnij nick i ID");
 
-  const r=await fetch(CHECKOUT_URL,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(payload)
-  });
-  const d=await r.json();
-  if(!d.url)return alert("Błąd Stripe");
-  window.location.href=d.url;
+    console.log("PAY payload:", payload);
+
+    const r = await fetch(CHECKOUT_URL, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const raw = await r.text();
+    console.log("PIPEDREAM RAW RESPONSE:", raw);
+
+    let data = {};
+    try{ data = JSON.parse(raw); }catch{}
+
+    if(!r.ok){
+      alert("Błąd Pipedream/Stripe:\n" + (data.error || raw || r.status));
+      return;
+    }
+
+    if(!data.url){
+      alert("Brak URL do Stripe.\nSprawdź Console (F12).");
+      return;
+    }
+
+    // 🔥 PRZEKIEROWANIE
+    window.location.href = data.url;
+
+  }catch(err){
+    console.error(err);
+    alert("Błąd JS: " + err.message);
+  }
 }
 </script>
 </body>
