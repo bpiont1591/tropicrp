@@ -1,238 +1,455 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8">
-<title>TropicRP • Sklep</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TropicRP – Sklep</title>
 
-<style>
-:root{
-  --bg:#071a16;
-  --card:#0f2f28;
-  --accent:#2dd4bf;
-  --danger:#ef4444;
-  --warn:#f59e0b;
-  --text:#e6fffa;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,Segoe UI,Arial;
-  background:
-    linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.9)),
-    url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e");
-  background-size:cover;
-  color:var(--text);
-}
-.wrap{max-width:1200px;margin:auto;padding:24px}
-h1{margin:0 0 8px}
-.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
+  <style>
+    :root{
+      --bg:#061018;
+      --glass: rgba(255,255,255,.08);
+      --glass2: rgba(255,255,255,.05);
+      --line: rgba(255,255,255,.14);
+      --text:#eaffff;
+      --muted: rgba(234,255,255,.72);
+      --mint:#22e6c3;
+      --sun:#ffb020;
+      --coral:#ff5c7a;
+      --r:20px;
+      --shadow: 0 18px 50px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,Segoe UI,Inter,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(255,176,32,.22), transparent 60%),
+        radial-gradient(900px 520px at 92% 0%, rgba(34,230,195,.20), transparent 62%),
+        radial-gradient(900px 520px at 70% 22%, rgba(124,92,255,.18), transparent 60%),
+        linear-gradient(180deg, #040b11, var(--bg));
+      min-height:100vh;
+      padding:22px;
+    }
+    .wrap{max-width:1200px;margin:0 auto}
+    header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:14px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:46px;height:46px;border-radius:16px;
+      background: linear-gradient(135deg, rgba(34,230,195,.95), rgba(255,176,32,.95));
+      display:grid;place-items:center;color:#042016;font-weight:1000;
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow: 0 10px 30px rgba(34,230,195,.18);
+    }
+    h1{margin:0;font-size:26px}
+    .sub{margin-top:6px;color:var(--muted);font-size:13px;max-width:760px}
+    .pill{
+      padding:10px 12px;border-radius:999px;border:1px solid var(--line);
+      background: rgba(255,255,255,.04);color: var(--muted);font-size:12px;white-space:nowrap
+    }
 
-.card{
-  background:rgba(15,47,40,.92);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:16px;
-  padding:16px;
-}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+    @media(max-width:1000px){.grid{grid-template-columns:1fr}}
 
-.shopScroll{
-  max-height:calc(100vh - 140px);
-  overflow-y:auto;
-}
+    .card{
+      background: linear-gradient(180deg, var(--glass), var(--glass2));
+      border:1px solid var(--line);
+      border-radius: var(--r);
+      padding:16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      position:relative;
+      overflow:hidden;
+    }
 
-.item{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px;
-  border-radius:12px;
-  margin-bottom:8px;
-  background:rgba(0,0,0,.25)
-}
-.price{font-weight:900;color:var(--accent)}
+    .shopScroll{
+      max-height: calc(100vh - 140px);
+      overflow-y:auto;
+      padding-right:10px;
+    }
+    @media(max-width:1000px){.shopScroll{max-height:none;overflow:visible;padding-right:0}}
+    .shopScroll::-webkit-scrollbar{width:10px}
+    .shopScroll::-webkit-scrollbar-thumb{
+      background: linear-gradient(180deg, rgba(34,230,195,.55), rgba(255,176,32,.45));
+      border-radius:999px;border:2px solid rgba(0,0,0,.35);
+    }
+    .shopScroll::-webkit-scrollbar-track{background: rgba(255,255,255,.05);border-radius:999px}
 
-button{
-  border:0;
-  border-radius:10px;
-  padding:8px 12px;
-  background:var(--accent);
-  color:#022c22;
-  font-weight:900;
-  cursor:pointer
-}
-button.red{background:var(--danger);color:white}
-button.orange{background:var(--warn);color:#111}
+    @media(min-width:1000px){.cartSticky{position:sticky; top:16px; height:fit-content}}
 
-.cartItem{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 0;
-  border-bottom:1px solid rgba(255,255,255,.1)
-}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+    .search{
+      flex:1;min-width:240px;display:flex;gap:10px;align-items:center;
+      padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+    .search input{border:0;outline:0;background:transparent;color:var(--text);width:100%;font-size:14px}
+    .chip{
+      cursor:pointer;padding:9px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);color: var(--muted);font-weight:800;font-size:12px;user-select:none
+    }
+    .chip.active{
+      color:#041a16;border-color: rgba(34,230,195,.55);
+      background: linear-gradient(135deg, rgba(34,230,195,.95), rgba(255,176,32,.95));
+    }
 
-input,textarea{
-  width:100%;
-  margin-top:8px;
-  padding:10px;
-  border-radius:10px;
-  border:0;
-  background:rgba(0,0,0,.3);
-  color:white
-}
-textarea{resize:vertical}
-.total{font-size:20px;font-weight:900;margin-top:10px}
-</style>
+    .category{margin:10px 0 18px}
+    .catHead{display:flex;align-items:center;gap:10px;margin:8px 0 10px}
+    .catTitle{font-size:18px;margin:0}
+    .catBar{height:10px;flex:1;border-radius:999px;background:linear-gradient(90deg, rgba(34,230,195,.25), rgba(255,176,32,.22));border:1px solid rgba(255,255,255,.08)}
+
+    .products{display:grid;grid-template-columns:repeat(auto-fill, minmax(235px, 1fr));gap:14px}
+    .product{
+      background: rgba(0,0,0,.18);
+      border:1px solid transparent;border-radius:18px;overflow:hidden;
+      display:flex;flex-direction:column;transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+    .product:hover{transform: translateY(-2px);border-color: rgba(34,230,195,.35);background: rgba(255,255,255,.04)}
+    .product img{width:100%;height:140px;object-fit:cover}
+    .pbody{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1}
+    .pname{margin:0;font-size:15px;font-weight:950}
+    .pdesc{margin:0;font-size:12px;color:var(--muted)}
+    .priceRow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:auto}
+    .price{
+      font-weight:1000;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+    }
+    .btn{
+      cursor:pointer;border:0;border-radius:14px;padding:10px 12px;
+      font-weight:1000;color:#041a16;
+      background: linear-gradient(135deg, rgba(34,230,195,.95), rgba(255,176,32,.95));
+      box-shadow: 0 12px 34px rgba(34,230,195,.10);
+    }
+    .btn.secondary{color:var(--text);background: transparent;border:1px solid rgba(255,255,255,.14);box-shadow:none}
+
+    .cartEmpty{
+      padding:12px;border-radius:16px;border:1px dashed rgba(255,255,255,.16);
+      background: rgba(0,0,0,.12);color: var(--muted);
+    }
+    .cartItem{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+    .cartItem:last-child{border-bottom:0}
+    .qty{
+      display:inline-block;margin-top:4px;padding:4px 8px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);background: rgba(255,255,255,.04);
+      color: var(--muted);font-size:11px;font-weight:900;
+    }
+    .cartActions{display:flex;gap:6px;align-items:center}
+    .iconBtn{cursor:pointer;border:0;border-radius:12px;padding:7px 10px;font-weight:1000}
+    .iconBtn.minus{background: rgba(255,176,32,.95);color:#041a16}
+    .iconBtn.remove{background: rgba(255,92,122,.95);color:#1a060a}
+
+    .total{
+      display:flex;justify-content:space-between;align-items:center;margin-top:12px;
+      padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);font-weight:1000;
+    }
+
+    label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+    input,textarea{
+      width:100%;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);color: var(--text);outline:none
+    }
+    textarea{min-height:92px;resize:vertical}
+
+    .msgOk,.msgErr{margin-top:12px;padding:10px 12px;border-radius:14px;font-size:13px;white-space:pre-line}
+    .msgOk{border:1px solid rgba(34,230,195,.35); background: rgba(34,230,195,.12); color:#bffcf0}
+    .msgErr{border:1px solid rgba(255,92,122,.35); background: rgba(255,92,122,.12); color:#ffd0d0}
+
+    .mini{margin-top:8px;font-size:11px;color:var(--muted);line-height:1.35}
+    .footer{margin-top:16px;color: rgba(234,255,255,.55);font-size:12px;text-align:center}
+  </style>
 </head>
 
 <body>
 <div class="wrap">
-<h1>🌴 TropicRP • Sklep</h1>
-<p>Realne płatności Stripe • Automatyczne potwierdzenie</p>
-
-<div class="grid">
-  <!-- SKLEP -->
-  <div class="card shopScroll">
-    <h2>🛒 Usługi</h2>
-
-    <div class="item">
-      <b>Limitowany pojazd</b>
+  <header>
+    <div class="brand">
+      <div class="logo">TR</div>
       <div>
-        <span class="price">120 zł</span>
-        <button onclick="add('car','Limitowany pojazd',120)">+</button>
+        <h1>🌴 TropicRP – Sklep</h1>
+        <div class="sub">Koszyk + dane gracza + Stripe Checkout Sessions (przez Pipedream). Ceny są po stronie Stripe (Price ID), więc nie da się ich podmienić.</div>
       </div>
     </div>
+    <div class="pill">Stripe • Webhook • FiveM</div>
+  </header>
 
-    <div class="item">
-      <b>Anty-lag</b>
-      <div>
-        <span class="price">10 zł</span>
-        <button onclick="add('antilag','Anty-lag',10)">+</button>
+  <div class="grid">
+    <!-- LEFT: products -->
+    <div class="card shopScroll" id="shopCard">
+      <div class="toolbar">
+        <div class="search" title="Szukaj po nazwie">
+          🔎 <input id="q" placeholder="Szukaj usługi (np. unban, ped, interior)..." />
+        </div>
+        <div class="chip active" data-filter="all">Wszystko</div>
+        <div class="chip" data-filter="premium">Premium</div>
+        <div class="chip" data-filter="biz">Biznes</div>
+        <div class="chip" data-filter="unban">Unbany</div>
       </div>
+
+      <div id="shop"></div>
     </div>
 
-    <div class="item">
-      <b>Custom Ped</b>
-      <div>
-        <span class="price">50 zł</span>
-        <button onclick="add('ped','Custom Ped',50)">+</button>
-      </div>
-    </div>
+    <!-- RIGHT: cart -->
+    <div class="card cartSticky">
+      <h2 style="margin:0 0 8px;font-size:18px">🛒 Koszyk</h2>
+      <div class="mini">Wysyłamy do backendu tylko <b>ID produktu</b> i <b>ilość</b>. Stripe liczy kwotę po swoich cenach (Price ID).</div>
 
-    <div class="item">
-      <b>Unban permanentny</b>
-      <div>
-        <span class="price">200 zł</span>
-        <button onclick="add('unban','Unban permanentny',200)">+</button>
+      <div id="cart" style="margin-top:12px"></div>
+
+      <div class="total">
+        <div>Suma (podgląd)</div>
+        <div id="total">0 zł</div>
+      </div>
+
+      <label for="nick">Nick / Discord</label>
+      <input id="nick" placeholder="np. Tropic#0001" />
+
+      <label for="identifier">Identifier (Discord ID / Steam / license)</label>
+      <input id="identifier" placeholder="np. 123456789012345678" />
+
+      <label for="notes">Uwagi</label>
+      <textarea id="notes" placeholder="np. rejestracja TRP-123, szczegóły unbana, podanie..."></textarea>
+
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" id="payBtn">✅ Zapłać (Stripe)</button>
+        <button class="btn secondary" id="clearBtn">🧹 Wyczyść</button>
+      </div>
+
+      <div id="msg"></div>
+
+      <div class="mini">
+        Jeśli coś nie działa: otwórz <b>F12 → Console</b> i sprawdź logi. Pipedream musi zwrócić JSON z <b>url</b>.
       </div>
     </div>
   </div>
 
-  <!-- KOSZYK -->
-  <div class="card">
-    <h2>💳 Koszyk</h2>
-    <div id="cart"></div>
-    <div class="total">Suma: <span id="total">0</span> zł</div>
-
-    <input id="nick" placeholder="Nick / Discord">
-    <input id="identifier" placeholder="ID w grze / Discord ID">
-    <textarea id="notes" placeholder="Uwagi (opcjonalnie)"></textarea>
-
-    <button style="width:100%;margin-top:12px" onclick="pay()">Zapłać (Stripe)</button>
-  </div>
-</div>
+  <div class="footer">© TropicRP • Sklep FiveM</div>
 </div>
 
 <script>
-/* ================== CONFIG ================== */
-const CHECKOUT_URL = "https://eoyfffyqo9gm4i.m.pipedream.net/";
-const cart = new Map();
+  // ✅ Twój endpoint Pipedream (Create Checkout)
+  const CHECKOUT_URL = "https://eoyfffyqo9gm4i.m.pipedream.net/";
 
-/* ================== KOSZYK ================== */
-function add(id,name,price){
-  const it = cart.get(id) || {id,name,price,qty:0};
-  it.qty++;
-  cart.set(id,it);
-  render();
-}
-function removeOne(id){
-  const it = cart.get(id);
-  if(!it) return;
-  it.qty<=1 ? cart.delete(id) : it.qty--;
-  render();
-}
-function removeAll(id){
-  cart.delete(id);
-  render();
-}
-function render(){
-  const el=document.getElementById("cart");
-  el.innerHTML="";
-  let sum=0;
-  for(const it of cart.values()){
-    sum+=it.price*it.qty;
-    el.innerHTML+=`
-      <div class="cartItem">
-        <div><b>${it.name}</b> x${it.qty}</div>
-        <div>
-          <button class="orange" onclick="removeOne('${it.id}')">−</button>
-          <button class="red" onclick="removeAll('${it.id}')">✕</button>
+  // Katalog (to tylko UI). ID muszą pasować do PRICE_MAP po stronie Pipedream.
+  const CATEGORIES = [
+    { key:"premium", title:"🚗 Usługi premium", items:[
+      { id:"limitowany_pojazd", name:"Limitowany pojazd", price:120, img:"images/car.png", desc:"Limitowany pojazd premium." },
+      { id:"anty_lag", name:"Anty-lag", price:10, img:"images/antylag.png", desc:"Efekt anty-lag." },
+      { id:"custom_dzwiek", name:"Customowy dźwięk silnika", price:20, img:"images/sound.png", desc:"Dźwięk wg ustaleń." },
+      { id:"custom_rej", name:"Customowa rejestracja pojazdu", price:10, img:"images/plate.png", desc:"Tablica wg ustaleń." },
+      { id:"druga_postac", name:"Druga postać", price:20, img:"images/character.png", desc:"Dodatkowy slot." },
+      { id:"custom_ped", name:"Custom Ped", price:50, img:"images/ped.png", desc:"+ wymagane podanie." },
+    ]},
+    { key:"biz", title:"🏢 Nieruchomości & Biznes", items:[
+      { id:"siedziba_org", name:"Siedziba organizacji", price:200, img:"images/hq.png", desc:"Cena zależna od interioru." },
+      { id:"wlasny_interior", name:"Własny interior", price:200, img:"images/interior.png", desc:"Interior wg ustaleń." },
+      { id:"wlasna_firma", name:"Własna firma", price:200, img:"images/business.png", desc:"Lub podanie po akceptacji." },
+    ]},
+    { key:"unban", title:"🔓 Unbany", items:[
+      { id:"unban_perm", name:"Unban permanentny", price:200, img:"images/unban.png", desc:"Odblokowanie na stałe." },
+      { id:"unban_8_30", name:"Unban (8–30 dni)", price:50, img:"images/unban.png", desc:"Decyzja administracji." },
+      { id:"unban_3_7", name:"Unban (3–7 dni)", price:20, img:"images/unban.png", desc:"Decyzja administracji." },
+      { id:"unban_1_2", name:"Unban (1–2 dni)", price:10, img:"images/unban.png", desc:"Decyzja administracji." },
+    ]},
+  ];
+
+  const cart = new Map();
+  const elShop = document.getElementById("shop");
+  const elCart = document.getElementById("cart");
+  const elTotal = document.getElementById("total");
+  const elMsg = document.getElementById("msg");
+  const elQ = document.getElementById("q");
+  const payBtn = document.getElementById("payBtn");
+  const clearBtn = document.getElementById("clearBtn");
+
+  let activeFilter = "all";
+
+  function money(n){ return `${n} zł`; }
+  function allItems(){ return CATEGORIES.flatMap(c => c.items.map(i => ({...i, catKey:c.key}))); }
+  function totalPreview(){ return [...cart.values()].reduce((s,i)=>s + i.price*i.qty, 0); }
+
+  function setMsg(type, text){
+    elMsg.innerHTML = `<div class="${type === "ok" ? "msgOk":"msgErr"}">${text}</div>`;
+  }
+
+  function renderShop(){
+    const q = elQ.value.trim().toLowerCase();
+    const groups = CATEGORIES.map(cat => {
+      const items = cat.items.filter(p => {
+        const matchesFilter = activeFilter === "all" ? true : (cat.key === activeFilter);
+        const matchesQuery = !q ? true : (p.name.toLowerCase().includes(q) || (p.desc||"").toLowerCase().includes(q));
+        return matchesFilter && matchesQuery;
+      });
+      return { ...cat, items };
+    }).filter(g => g.items.length > 0);
+
+    if(groups.length === 0){
+      elShop.innerHTML = `<div class="cartEmpty">Brak wyników. Spróbuj innego wyszukiwania.</div>`;
+      return;
+    }
+
+    elShop.innerHTML = "";
+    groups.forEach(cat => {
+      const section = document.createElement("div");
+      section.className = "category";
+      section.innerHTML = `
+        <div class="catHead">
+          <h2 class="catTitle">${cat.title}</h2>
+          <div class="catBar"></div>
         </div>
-      </div>`;
-  }
-  document.getElementById("total").textContent=sum;
-}
+        <div class="products"></div>
+      `;
+      const grid = section.querySelector(".products");
 
-/* ================== STRIPE PAY ================== */
-async function pay(){
-  try{
-    if(cart.size===0) return alert("Koszyk pusty");
+      cat.items.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "product";
+        card.innerHTML = `
+          <img src="${p.img}" alt="">
+          <div class="pbody">
+            <h3 class="pname">${p.name}</h3>
+            <p class="pdesc">${p.desc || ""}</p>
+            <div class="priceRow">
+              <div class="price">${money(p.price)}</div>
+              <button class="btn" data-add="${p.id}">Dodaj</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
 
-    const payload={
-      customer:{
-        nick:document.getElementById("nick").value.trim(),
-        identifier:document.getElementById("identifier").value.trim()
-      },
-      items:[...cart.values()],
-      notes:document.getElementById("notes").value
-    };
-
-    if(!payload.customer.nick || !payload.customer.identifier)
-      return alert("Uzupełnij nick i ID");
-
-    console.log("PAY payload:", payload);
-
-    const r = await fetch(CHECKOUT_URL, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify(payload)
+      elShop.appendChild(section);
     });
-
-    const raw = await r.text();
-    console.log("PIPEDREAM RAW RESPONSE:", raw);
-
-    let data = {};
-    try{ data = JSON.parse(raw); }catch{}
-
-    if(!r.ok){
-      alert("Błąd Pipedream/Stripe:\n" + (data.error || raw || r.status));
-      return;
-    }
-
-    if(!data.url){
-      alert("Brak URL do Stripe.\nSprawdź Console (F12).");
-      return;
-    }
-
-    // 🔥 PRZEKIEROWANIE
-    window.location.href = data.url;
-
-  }catch(err){
-    console.error(err);
-    alert("Błąd JS: " + err.message);
   }
-}
+
+  function add(id){
+    const p = allItems().find(x => x.id === id);
+    const cur = cart.get(id);
+    cart.set(id, { id:p.id, name:p.name, price:p.price, qty: (cur?.qty || 0) + 1 });
+    renderCart();
+  }
+
+  function removeOne(id){
+    const it = cart.get(id);
+    if(!it) return;
+    if(it.qty <= 1) cart.delete(id);
+    else cart.set(id, { ...it, qty: it.qty - 1 });
+    renderCart();
+  }
+
+  function removeAll(id){
+    cart.delete(id);
+    renderCart();
+  }
+
+  function renderCart(){
+    if(cart.size === 0){
+      elCart.innerHTML = `<div class="cartEmpty">Koszyk pusty. Dodaj coś z cennika 🌴</div>`;
+    } else {
+      elCart.innerHTML = "";
+      for(const it of cart.values()){
+        const row = document.createElement("div");
+        row.className = "cartItem";
+        row.innerHTML = `
+          <div>
+            <b>${it.name}</b><br>
+            <span class="qty">x${it.qty}</span>
+          </div>
+          <div class="cartActions">
+            <b>${money(it.price * it.qty)}</b>
+            <button class="iconBtn minus" title="Usuń 1" data-minus="${it.id}">−</button>
+            <button class="iconBtn remove" title="Usuń wszystko" data-remove="${it.id}">✕</button>
+          </div>
+        `;
+        elCart.appendChild(row);
+      }
+    }
+    elTotal.textContent = money(totalPreview());
+  }
+
+  async function pay(){
+    try{
+      elMsg.innerHTML = "";
+      if(cart.size === 0) return setMsg("err", "Koszyk pusty.");
+      if(!CHECKOUT_URL) return setMsg("err", "Brak CHECKOUT_URL.");
+
+      const nick = document.getElementById("nick").value.trim();
+      const identifier = document.getElementById("identifier").value.trim();
+      const notes = document.getElementById("notes").value.trim();
+
+      if(!nick || !identifier) return setMsg("err", "Uzupełnij Nick/Discord oraz Identifier.");
+
+      // 🔒 Wysyłamy tylko ID i qty (ceny nie idą z przeglądarki)
+      const items = [...cart.values()].map(i => ({ id: i.id, qty: i.qty }));
+
+      payBtn.disabled = true;
+      payBtn.textContent = "Tworzę płatność...";
+
+      const r = await fetch(CHECKOUT_URL, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ items, customer:{ nick, identifier }, notes })
+      });
+
+      const raw = await r.text();
+      let data = {};
+      try{ data = JSON.parse(raw); }catch{}
+
+      console.log("PIPEDREAM RAW:", raw);
+      console.log("PIPEDREAM JSON:", data);
+
+      if(!r.ok){
+        throw new Error(data?.error || raw || `HTTP ${r.status}`);
+      }
+      if(!data?.url){
+        throw new Error("Brak URL do Stripe (Pipedream nie zwrócił data.url)");
+      }
+
+      window.location.href = data.url;
+    }catch(e){
+      setMsg("err", e.message);
+      payBtn.disabled = false;
+      payBtn.textContent = "✅ Zapłać (Stripe)";
+    }
+  }
+
+  // events
+  document.getElementById("shopCard").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-add]");
+    if(!b) return;
+    add(b.dataset.add);
+  });
+
+  elCart.addEventListener("click", (e) => {
+    const bMinus = e.target.closest("button[data-minus]");
+    if(bMinus) return removeOne(bMinus.dataset.minus);
+    const bRemove = e.target.closest("button[data-remove]");
+    if(bRemove) return removeAll(bRemove.dataset.remove);
+  });
+
+  document.querySelectorAll(".chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      activeFilter = chip.dataset.filter;
+      renderShop();
+    });
+  });
+
+  elQ.addEventListener("input", renderShop);
+  payBtn.addEventListener("click", pay);
+
+  clearBtn.addEventListener("click", () => {
+    cart.clear();
+    renderCart();
+    ["nick","identifier","notes"].forEach(id => document.getElementById(id).value = "");
+    setMsg("ok", "Wyczyszczono koszyk.");
+  });
+
+  // init
+  renderShop();
+  renderCart();
 </script>
 </body>
 </html>
